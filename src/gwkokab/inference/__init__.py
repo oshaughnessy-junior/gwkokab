@@ -22,6 +22,9 @@ from .flowMC_sampled_poisson_likelihood import (
 from .numpyro_sampled_poisson_likelihood import (
     numpyro_sampled_poisson_likelihood as numpyro_sampled_poisson_likelihood,
 )
+from .numpyro_mixed_poisson_likelihood import (
+    numpyro_mixed_poisson_likelihood as numpyro_mixed_poisson_likelihood,
+)
 from .event_likelihoods import (
     GaussianEventLikelihood as GaussianEventLikelihood,
     RIFTMarginalLikelihood as RIFTMarginalLikelihood,
