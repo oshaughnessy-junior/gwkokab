@@ -37,3 +37,6 @@ from .poissonlikelihood_utils import (
     low_ess_events as low_ess_events,
     sampled_poisson_likelihood_fn as sampled_poisson_likelihood_fn,
 )
+from .nuts_checkpoint import (
+    run_nuts_with_checkpoints as run_nuts_with_checkpoints,
+)
