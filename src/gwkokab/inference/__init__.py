@@ -37,5 +37,6 @@ from .poissonlikelihood_utils import (
     sampled_poisson_likelihood_fn as sampled_poisson_likelihood_fn,
 )
 from .nuts_checkpoint import (
+    CheckpointExit as CheckpointExit,
     run_nuts_with_checkpoints as run_nuts_with_checkpoints,
 )
