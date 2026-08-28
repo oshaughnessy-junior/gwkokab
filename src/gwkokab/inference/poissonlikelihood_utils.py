@@ -389,8 +389,11 @@ def mixed_poisson_likelihood_fn(
 
     # ---- discrete group: I_i = (1/M_i) Σ_k exp(log ρ(y) − log π)  (narrow) ---
     n_discrete = sum(int(d.shape[0]) for d in data_group)
-    total_ln_l_d = -jnp.sum(jnp.asarray([jnp.log(N_pe).sum() for N_pe in N_pes])) \
-        if len(N_pes) > 0 else jnp.zeros(())  # − Σ log M_i
+    total_ln_l_d = (
+        -jnp.sum(jnp.asarray([jnp.log(N_pe).sum() for N_pe in N_pes]))
+        if len(N_pes) > 0
+        else jnp.zeros(())
+    )  # − Σ log M_i
     pe_variance = jnp.zeros(())
     log_I_d_list = []
     if n_discrete > 0:
@@ -432,7 +435,9 @@ def mixed_poisson_likelihood_fn(
     if variance_cut_threshold is not None:
         total_variance = jnp.nan_to_num(
             jnp.sum(rel_var_s) + pe_variance,
-            nan=jnp.inf, posinf=jnp.inf, neginf=jnp.inf,
+            nan=jnp.inf,
+            posinf=jnp.inf,
+            neginf=jnp.inf,
         )
         log_likelihood -= variance_tapering_fn(total_variance, variance_cut_threshold)
 
@@ -453,11 +458,10 @@ def low_ess_events(
 ) -> Array:
     r"""Host-side helper: indices of events whose IS estimate is under-resolved.
 
-    An event whose true parameters sit in the tail of ``n(·|θ)`` receives very
-    few effective model samples, so its evidence estimate ``I_i`` is noisy.
-    Returns the integer indices where ``ess_per_event[i] < frac · n_samples``.
-    Intended for a non-jitted diagnostic pass (logging / warnings), not inside
-    the likelihood itself.
+    An event whose true parameters sit in the tail of ``n(·|θ)`` receives very few
+    effective model samples, so its evidence estimate ``I_i`` is noisy. Returns the
+    integer indices where ``ess_per_event[i] < frac · n_samples``. Intended for a non-
+    jitted diagnostic pass (logging / warnings), not inside the likelihood itself.
     """
     import numpy as _np
 

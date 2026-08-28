@@ -71,8 +71,10 @@ def main():
     flagged = low_ess_events(diag["ess_per_event"], args.n_model_samples, frac=0.1)
     print(f"log L at truth         : {float(ll):+.3f}")
     print(f"expected detected count: {float(diag['expected_rate']):.2f}")
-    print(f"median per-event ESS   : {float(jnp.median(diag['ess_per_event'])):.0f}"
-          f" / {args.n_model_samples}")
+    print(
+        f"median per-event ESS   : {float(jnp.median(diag['ess_per_event'])):.0f}"
+        f" / {args.n_model_samples}"
+    )
     print(f"low-ESS (tail) events  : {len(flagged)}")
 
     # --- MAP recovery via gradient ascent through the sampler ------------- #
@@ -92,9 +94,9 @@ def main():
         return
 
     # --- full numpyro NUTS posterior ------------------------------------- #
-    import numpyro
     import numpyro.distributions as dist
     from numpyro.infer import MCMC, NUTS
+
     from gwkokab.inference.numpyro_sampled_poisson_likelihood import (
         numpyro_sampled_poisson_likelihood,
     )

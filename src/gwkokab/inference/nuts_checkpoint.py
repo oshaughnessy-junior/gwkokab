@@ -25,8 +25,13 @@ Example
     from gwkokab.inference import run_nuts_with_checkpoints
 
     post = run_nuts_with_checkpoints(
-        model, (T_obs,), num_warmup=300, num_samples=600,
-        key=jax.random.PRNGKey(0), ckpt_dir="ckpt", chunk=50,
+        model,
+        (T_obs,),
+        num_warmup=300,
+        num_samples=600,
+        key=jax.random.PRNGKey(0),
+        ckpt_dir="ckpt",
+        chunk=50,
         nuts_kwargs=dict(max_tree_depth=7, target_accept_prob=0.7),
     )
 """
@@ -44,14 +49,14 @@ from numpyro.infer import MCMC, NUTS
 
 
 class CheckpointExit(Exception):
-    """Raised (when ``max_wall_s`` is set) after a checkpoint is safely written and
-    the process wall-clock budget is exhausted, to request an exit-driven restart.
+    """Raised (when ``max_wall_s`` is set) after a checkpoint is safely written and the
+    process wall-clock budget is exhausted, to request an exit-driven restart.
 
-    The caller catches this and exits with the HTCondor ``checkpoint_exit_code`` so
-    the scheduler spools the checkpoint directory and re-runs the job, which then
-    resumes from the newest ``nuts_ckpt.pkl``. Unlike relying on
-    ``ON_EXIT_OR_EVICT`` to transfer output on a (possibly ungraceful) eviction,
-    this guarantees the checkpoint is preserved across every restart.
+    The caller catches this and exits with the HTCondor ``checkpoint_exit_code`` so the
+    scheduler spools the checkpoint directory and re-runs the job, which then resumes
+    from the newest ``nuts_ckpt.pkl``. Unlike relying on ``ON_EXIT_OR_EVICT`` to
+    transfer output on a (possibly ungraceful) eviction, this guarantees the checkpoint
+    is preserved across every restart.
     """
 
 
@@ -151,7 +156,10 @@ def run_nuts_with_checkpoints(
             flush=True,
         )
         if _budget_exhausted() and num_samples > 0:
-            print(f"[ckpt] wall budget {max_wall_s}s hit after warmup -> exit for restart", flush=True)
+            print(
+                f"[ckpt] wall budget {max_wall_s}s hit after warmup -> exit for restart",
+                flush=True,
+            )
             raise CheckpointExit()
 
     # sample in chunks, checkpointing after each
@@ -182,7 +190,10 @@ def run_nuts_with_checkpoints(
         )
         print(f"[ckpt] sampled {n_done}/{num_samples}", flush=True)
         if n_done < num_samples and _budget_exhausted():
-            print(f"[ckpt] wall budget {max_wall_s}s hit at {n_done}/{num_samples} -> exit for restart", flush=True)
+            print(
+                f"[ckpt] wall budget {max_wall_s}s hit at {n_done}/{num_samples} -> exit for restart",
+                flush=True,
+            )
             raise CheckpointExit()
 
     return {k: np.concatenate(v) for k, v in acc.items()}

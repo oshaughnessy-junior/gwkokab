@@ -30,12 +30,12 @@ def flowMC_sampled_poisson_likelihood(
 ) -> Callable[[Array, Dict[str, Any]], Array]:
     r"""Sample-mode (likelihood-mode) flowMC population log-posterior.
 
-    The dual of :func:`flowMC_analytical_poisson_likelihood`: the population
-    model is supplied as a ``sampler_fn(**params) -> (samples, log_weights)``
-    and the per-event terms are evaluated by a per-event **likelihood** rather
-    than a model **density**.  ``data["T_obs"]`` is read at call time, mirroring
-    how the analytical wrapper reads ``data["samples_stack"]`` etc.; the event
-    evaluators and ``pdet_fn`` are static and bound at construction.
+    The dual of :func:`flowMC_analytical_poisson_likelihood`: the population model is
+    supplied as a ``sampler_fn(**params) -> (samples, log_weights)`` and the per-event
+    terms are evaluated by a per-event **likelihood** rather than a model **density**.
+    ``data["T_obs"]`` is read at call time, mirroring how the analytical wrapper reads
+    ``data["samples_stack"]`` etc.; the event evaluators and ``pdet_fn`` are static and
+    bound at construction.
     """
     del variables
 

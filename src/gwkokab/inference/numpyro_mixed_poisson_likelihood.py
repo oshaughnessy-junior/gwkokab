@@ -80,7 +80,9 @@ def numpyro_mixed_poisson_likelihood(
                     )  # type: ignore[arg-type]
                 else:
                     prior_dist = prior_dist_fn  # type: ignore[assignment]
-                partial_variables_samples[i] = numpyro.sample(parameter_name, prior_dist)
+                partial_variables_samples[i] = numpyro.sample(
+                    parameter_name, prior_dist
+                )
             variables_samples = partial_variables_samples  # type: ignore[assignment]
         else:
             variables_samples = [
@@ -93,7 +95,9 @@ def numpyro_mixed_poisson_likelihood(
         }
 
         # Same population θ in both representations.
-        model_samples, model_log_weights = sampler_fn(**constant_params, **mapped_params)
+        model_samples, model_log_weights = sampler_fn(
+            **constant_params, **mapped_params
+        )
         model_instance = (
             dist_fn(**constant_params, **mapped_params) if dist_fn is not None else None
         )

@@ -38,13 +38,13 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
+from gwkokab.inference.event_likelihoods import (
+    gaussian_event_log_likelihoods,
+    GaussianEventLikelihood,
+)
 from gwkokab.inference.poissonlikelihood_utils import (
     low_ess_events,
     sampled_poisson_likelihood_fn,
-)
-from gwkokab.inference.event_likelihoods import (
-    GaussianEventLikelihood,
-    gaussian_event_log_likelihoods,
 )
 
 
@@ -130,9 +130,7 @@ def test_TP1_sampled_matches_exact_loglikelihood():
     for offset in (-0.4, 0.0, 0.3):  # a small grid of population means θ=m
         m = _M_TRUE + offset
         samples, log_w = _draw_model_samples(key, m, _S_TRUE, n_samples, _LOGR_TRUE)
-        ll, diag = sampled_poisson_likelihood_fn(
-            Ls, samples, log_w, None, _T_OBS, None
-        )
+        ll, diag = sampled_poisson_likelihood_fn(Ls, samples, log_w, None, _T_OBS, None)
         ll_exact = _exact_log_likelihood(
             _D[:, 0], _SIGMA, _LOGR_TRUE, m, _S_TRUE, _T_OBS
         )
@@ -149,7 +147,7 @@ def test_TP1_sampled_matches_analytical_density_mode():
     """Cross-check against gwkokab's own analytical (density-mode) estimator."""
     pytest.importorskip("gwkokab.models.utils")
     import numpyro.distributions as dist
-    from numpyro.distributions import constraints
+
     from gwkokab.inference.poissonlikelihood_utils import (
         analytical_poisson_likelihood_fn,
     )
@@ -177,9 +175,9 @@ def test_TP1_sampled_matches_analytical_density_mode():
     M = 20_000
     n_ev = _D.shape[0]
     keys = jax.random.split(key, n_ev)
-    pe = jnp.stack(
-        [_D[i] + _SIGMA[i] * jax.random.normal(keys[i], (M, 1)) for i in range(n_ev)]
-    )  # (n_ev, M, 1)
+    pe = jnp.stack([
+        _D[i] + _SIGMA[i] * jax.random.normal(keys[i], (M, 1)) for i in range(n_ev)
+    ])  # (n_ev, M, 1)
     ln_offsets = jnp.full((n_ev, M), -math.log(M))
     ll_density = analytical_poisson_likelihood_fn(
         model, pmean, pe, ln_offsets, {"T_obs": _T_OBS}, None
@@ -257,8 +255,9 @@ def test_TP3_tail_event_collapses_ess():
 # TP4 — recovery
 # --------------------------------------------------------------------------- #
 def test_TP4a_gradient_ascent_recovers_population_mean():
-    """End-to-end: ascend log L(m) through the reparameterised sampler on a
-    catalogue actually drawn from the true population, recovering m_true."""
+    """End-to-end: ascend log L(m) through the reparameterised sampler on a catalogue
+    actually drawn from the true population, recovering m_true.
+    """
     d, sigma = _draw_catalog(jax.random.PRNGKey(70), _M_TRUE, _S_TRUE, n_events=120)
     Ls = gaussian_event_log_likelihoods(d, (sigma**2)[:, None, None])
 
@@ -280,9 +279,10 @@ def test_TP4a_gradient_ascent_recovers_population_mean():
 
 def test_TP4b_numpyro_wrapper_assembles_finite_differentiable_density():
     pytest.importorskip("gwkokab.models.utils")
-    numpyro = pytest.importorskip("numpyro")
-    from numpyro.infer.util import log_density
+    pytest.importorskip("numpyro")
     import numpyro.distributions as dist
+    from numpyro.infer.util import log_density
+
     from gwkokab.inference.numpyro_sampled_poisson_likelihood import (
         numpyro_sampled_poisson_likelihood,
     )

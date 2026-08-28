@@ -63,9 +63,7 @@ class GaussianEventLikelihood:
 
     def __call__(self, samples: Array) -> Array:
         samples = jnp.atleast_2d(samples)
-        return jax.scipy.stats.multivariate_normal.logpdf(
-            samples, self.mean, self.cov
-        )
+        return jax.scipy.stats.multivariate_normal.logpdf(samples, self.mean, self.cov)
 
 
 def gaussian_event_log_likelihoods(
@@ -89,9 +87,7 @@ def gaussian_event_log_likelihoods(
     """
     means = jnp.atleast_2d(means)
     n_events = means.shape[0]
-    return tuple(
-        GaussianEventLikelihood(means[i], covs[i]) for i in range(n_events)
-    )
+    return tuple(GaussianEventLikelihood(means[i], covs[i]) for i in range(n_events))
 
 
 class RIFTMarginalLikelihood:
@@ -137,11 +133,10 @@ def stack_event_log_likelihoods(
 ) -> Callable[[Array], Array]:
     r"""Optional helper: fold a tuple of evaluators into one batched callable.
 
-    Returns ``L: (n_samples, n_dim) -> (n_events, n_samples)`` by stacking the
-    per-event evaluators.  Useful when every event shares the same functional
-    form and a single ``vmap`` is cheaper than the Python loop; the core
-    likelihood accepts either the tuple or — via a one-line wrapper around this
-    — a batched form.
+    Returns ``L: (n_samples, n_dim) -> (n_events, n_samples)`` by stacking the per-event
+    evaluators.  Useful when every event shares the same functional form and a single
+    ``vmap`` is cheaper than the Python loop; the core likelihood accepts either the
+    tuple or — via a one-line wrapper around this — a batched form.
     """
 
     def batched(samples: Array) -> Array:
